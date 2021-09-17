@@ -1,0 +1,66 @@
+highest_num = 0;
+highest_trial = 1;
+
+while highest_trial <= length(set_mean_similarity)
+
+	if set_mean_similarity(1, highest_trial) > highest_num
+		
+		highest_num = set_mean_similarity(1, highest_trial);
+		next_set(1, 1) = set_mean_similarity(1, highest_trial);
+		next_set(2, 1) = set_mean_similarity(2, highest_trial); 
+		next_set(3, 1) = set_mean_similarity(3, highest_trial); 
+		next_set(4, 1) = set_mean_similarity(4, highest_trial); 
+		next_set(5, 1) = set_mean_similarity(5, highest_trial);  
+
+	end
+	
+	highest_trial = highest_trial + 1;
+end
+
+
+
+final_column = 1;
+
+final_set1(1, final_column) = next_set(1, :);
+final_set1(2, final_column) = next_set(2, :);
+final_set1(3, final_column) = next_set(3, :);
+final_set1(4, final_column) = next_set(4, :);
+final_set1(5, final_column) = next_set(5, :);
+
+low_bound = final_set1(2, 1);
+up_bound = final_set1(3, 1);
+
+final_column = final_column + 1;
+
+
+final_column = 2;
+final_set_count = 2;
+
+while final_column <= length(set_mean_similarity)
+	
+	cond_flag = 0;
+
+	if set_mean_similarity(2, final_column) < low_bound || set_mean_similarity(2, final_column) > up_bound
+
+		cond_flag = cond_flag + 1;
+	end
+
+	
+	if set_mean_similarity(5, final_column) < final_set1(4, 1)
+
+		cond_flag = cond_flag + 1;
+	end
+
+
+	if cond_flag == 2
+	
+		final_set1(1, final_set_count) = set_mean_similarity(1, final_column);
+		final_set1(2, final_set_count) = set_mean_similarity(2, final_column);
+		final_set1(3, final_set_count) = set_mean_similarity(3, final_column);
+		final_set1(4, final_set_count) = set_mean_similarity(4, final_column);
+		final_set1(5, final_set_count) = set_mean_similarity(5, final_column);
+		final_set_count = final_set_count + 1;
+	end
+	
+	final_column = final_column + 1;
+end

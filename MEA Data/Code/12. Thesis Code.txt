@@ -1,0 +1,78 @@
+overall_count = 1;
+channel_count = 1;
+
+while overall_count <= length(burst.channel)
+	channel_matrix (burst.channel(channel_count), burst.index(channel_count)) = 1;
+	channel_count = channel_count + 1;
+	overall_count = overall_count + 1;
+end
+
+last_row = 1;
+while last_row <= length(burst.t0)
+	channel_matrix (64, last_row) = 0;
+	last_row = last_row + 1;
+end
+
+
+
+
+activation_time = channel_matrix;
+time_slot_count = 1;
+
+while time_slot_count <= length(burst.channel)
+	
+	if time_slot_count > 1
+		activation_time(burst.channel(time_slot_count), burst.index(time_slot_count)) = spks.time(burstlet.start(burst.burstlets(time_slot_count)));
+	end
+
+	time_slot_count = time_slot_count + 1;
+end
+
+activation_time(2,1) = spks.time(burstlet.start(burst.burstlets(1)));
+
+
+
+activation_time(1,:) = [];
+activation_time(4,:) = [];
+activation_time(6,:) = [];
+activation_time(54,:) = [];
+activation_time(60,:) = [];
+
+
+
+
+
+channel_count = 1;
+matrix_row = 1;
+burst_column = 1;
+activation_slot = 1;
+
+while burst_column <= length(burst.t0)
+
+	while channel_count <= 59
+
+		while matrix_row <= 59
+			if activation_time(channel_count, burst_column) ~= 0 && activation_time(matrix_row, burst_column) ~= 0 	&& channel_count ~= matrix_row	
+				activation_matrix(activation_slot, burst_column) = activation_time(channel_count, burst_column) - activation_time(matrix_row, burst_column);
+			end
+
+			matrix_row = matrix_row + 1;
+			activation_slot = activation_slot + 1;
+		end
+	
+		channel_count = channel_count + 1;
+		matrix_row = 1;
+	end
+	
+	channel_count = 1;
+	burst_column = burst_column + 1;
+	activation_slot = 1;
+	
+end
+
+activation_matrix(3481, :) = 0;
+
+
+Y = pdist(sim_index);
+Z = linkage(Y, 'single');
+[H,T,outperm] = dendrogram(Z, 0);

@@ -1,0 +1,21 @@
+activation_time = channel_matrix;
+time_slot_count = 1;
+
+while time_slot_count <= length(burst.channel)
+	
+	if time_slot_count > 1
+		activation_time(burst.channel(time_slot_count), burst.index(time_slot_count)) = spks.time(burstlet.start(burst.burstlets(time_slot_count)));
+	end
+
+	time_slot_count = time_slot_count + 1;
+end
+
+activation_time(2,1) = spks.time(burstlet.start(burst.burstlets(1)));
+
+
+
+activation_time(1,:) = [];
+activation_time(4,:) = [];
+activation_time(6,:) = [];
+activation_time(54,:) = [];
+activation_time(60,:) = [];

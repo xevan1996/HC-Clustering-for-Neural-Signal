@@ -1,0 +1,29 @@
+channel_count = 1;
+matrix_row = 1;
+burst_column = 1;
+activation_slot = 1;
+
+while burst_column <= length(burst.t0)
+
+	while channel_count <= 59
+
+		while matrix_row <= 59
+			if activation_time(channel_count, burst_column) ~= 0 && activation_time(matrix_row, burst_column) ~= 0 	&& channel_count ~= matrix_row	
+				activation_matrix(activation_slot, burst_column) = activation_time(channel_count, burst_column) - activation_time(matrix_row, burst_column);
+			end
+
+			matrix_row = matrix_row + 1;
+			activation_slot = activation_slot + 1;
+		end
+	
+		channel_count = channel_count + 1;
+		matrix_row = 1;
+	end
+	
+	channel_count = 1;
+	burst_column = burst_column + 1;
+	activation_slot = 1;
+	
+end
+
+activation_matrix(3481, :) = 0;

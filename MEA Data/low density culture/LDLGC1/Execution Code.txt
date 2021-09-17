@@ -1,0 +1,31 @@
+burst_channel = burst.channel;
+burst_index = burst.index;
+burst_t0 = burst.t0;
+burst_burstlets = burst.burstlets;
+burstlet_start = burstlet.start;
+spks_time = spks.time;
+burst_elec = burst.chcnt;
+
+[activation_time, activation_matrix] = get_act_matrix(burst_channel, burst_index, burst_t0, burst_burstlets, burstlet_start, spks_time);
+
+sim_index = get_sim_index(activation_matrix, 0.01, burst_elec, burst_t0);
+
+plot_sim_matrix(sim_index, 1);
+
+[outperm, sorted_sim_index] = get_hier_clus(sim_index);
+
+plot_sim_matrix(sorted_sim_index, 1);
+
+[set_size, burst_mean_set, mean_sim_index, set_mean_similarity] = get_set_similarity(burst_t0, burst_elec, 0.01, activation_matrix, sorted_sim_index, outperm);
+
+plot_combine(sorted_sim_index, set_mean_similarity, 1);
+
+[order, prop_order] = get_prop_order(burst_channel, burst_index, burst_t0, burstlet_start, burst_burstlets, spks_time, outperm, 292);
+
+color_choice = ["blue", "cyan", "green", "yellow", "[1 0.5 0]", "red"];
+
+plot_prop_order(order, prop_order, color_choice)
+
+memory
+a = rand(20000);
+memory

@@ -1,0 +1,106 @@
+highest_num = 0;
+highest_trial = 1;
+
+while highest_trial <= length(set_mean_similarity)
+
+	if set_mean_similarity(1, highest_trial) > highest_num
+		
+		highest_num = set_mean_similarity(1, highest_trial);
+		next_set1(1, 1) = set_mean_similarity(1, highest_trial);
+		next_set1(2, 1) = set_mean_similarity(2, highest_trial); 
+		next_set1(3, 1) = set_mean_similarity(3, highest_trial); 
+		next_set1(4, 1) = set_mean_similarity(4, highest_trial); 
+		next_set1(5, 1) = set_mean_similarity(5, highest_trial);  
+
+	end
+	
+	highest_trial = highest_trial + 1;
+end
+
+
+
+
+
+
+small_set = next_set1(2, 1) - set_size + 1;
+large_set = next_set1(3, 1) + set_size + 1;
+
+trial_sim_1 = mean_sim_index;
+tiral_elec_1 = mean_elec_num;
+trial_set_1 = set_mean_similarity;
+
+repeat_max = large_set - small_set - 1;
+repeat_count = 1;
+
+while repeat_count <= repeat_max
+
+	trial_sim_1(:, small_set) = [];
+	tiral_elec_1(:, small_set) = [];
+	trial_set_1(:, small_set) = [];
+	repeat_count = repeat_count + 1;
+end
+
+
+
+
+
+
+
+highest_num = 0;
+highest_trial = 1;
+
+while highest_trial <= length(trial_set_1)
+
+	if trial_set_1(1, highest_trial) > highest_num
+		
+		highest_num = trial_set_1(1, highest_trial);
+		next_set1(1, 2) = trial_set_1(1, highest_trial);
+		next_set1(2, 2) = trial_set_1(2, highest_trial); 
+		next_set1(3, 2) = trial_set_1(3, highest_trial); 
+		next_set1(4, 2) = trial_set_1(4, highest_trial); 
+		next_set1(5, 2) = trial_set_1(5, highest_trial);  
+
+	end
+	
+	highest_trial = highest_trial + 1;
+end
+
+small_set = next_set1(2, 1) - set_size + 1;
+large_set = next_set1(3, 1) + set_size + 1;
+
+trial_sim_2 = trial_set_1;
+tiral_elec_2 = trial_set_1;
+trial_set_2 = trial_set_1;
+
+repeat_max = large_set - small_set - 1;
+repeat_count = 1;
+
+while repeat_count <= repeat_max
+
+	trial_sim_2(:, small_set) = [];
+	tiral_elec_2(:, small_set) = [];
+	trial_set_2(:, small_set) = [];
+	repeat_count = repeat_count + 1;
+end
+
+
+
+
+highest_num = 0;
+highest_trial = 1;
+
+while highest_trial <= length(trial_set_1)
+
+	if trial_set_1(1, highest_trial) > highest_num
+		
+		highest_num = trial_set_1(1, highest_trial);
+		next_set1(1, 2) = trial_set_1(1, highest_trial);
+		next_set1(2, 2) = trial_set_1(2, highest_trial); 
+		next_set1(3, 2) = trial_set_1(3, highest_trial); 
+		next_set1(4, 2) = trial_set_1(4, highest_trial); 
+		next_set1(5, 2) = trial_set_15, highest_trial);  
+
+	end
+	
+	highest_trial = highest_trial + 1;
+end

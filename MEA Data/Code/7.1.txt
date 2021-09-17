@@ -1,0 +1,145 @@
+mean_column_ref = 1;
+lower_boundary = 1;
+upper_boundary = lower_boundary + set_size - 1;
+mean_set_column = 1;
+
+while upper_boundary <= length(mean_activation)
+	
+	repetition_count = 1;
+	set_mean_summation = 0;
+
+	while repetition_count <= set_size
+
+		mean_rela_diff = 0.03 - abs(sorted_mean_activation(1, mean_set_column) - set_mean(1, mean_column_ref));
+		mean_heav_step = heaviside(mean_rela_diff);
+		set_mean_summation = mean_heav_step + set_mean_summation;
+		mean_set_column = mean_set_column + 1;
+		repetition_count = repetition_count + 1;
+	end 
+
+	set_mean_similarity(1, mean_column_ref) = 1 / set_size * set_mean_summation;
+	set_mean_similarity(2, mean_column_ref) = lower_boundary;
+	set_mean_similarity(3, mean_column_ref) = upper_boundary;
+	lower_boundary = lower_boundary + 1;
+	mean_set_column = lower_boundary;
+	upper_boundary = lower_boundary + set_size - 1;
+	mean_column_ref = mean_column_ref + 1;
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+mean_column_ref = 1;
+lower_boundary = 1;
+upper_boundary = lower_boundary + set_size - 1;
+mean_set_column = 1;
+j = 1;
+
+while upper_boundary <= length(mean_activation)
+	
+	repetition_count = 1;
+	set_mean_summation = 0;
+	set_similarity = 0;
+
+	while repetition_count <= set_size
+
+		j = 1;
+		act_elec = burst.chcnt(outperm(mean_set_column));
+		formula_elec = act_elec * (act_elec - 1);
+		set_mean_summation = 0;
+		
+		while j <= 3481
+
+			if sorted_activation_matrix(j, mean_set_column) ~= 0
+
+				mean_rela_diff = 0.03 - abs(sorted_activation_matrix(j, mean_set_column) - set_mean(1, mean_column_ref));
+				mean_heav_step = heaviside(mean_rela_diff);
+				set_mean_summation = mean_heav_step + set_mean_summation;
+			end
+				
+			j = j + 1;
+		end
+		
+		burst_similarity = 1 / formula_elec * set_mean_summation;
+		sbe_similarity_in_set(lower_boundary, repetition_count) = burst_similarity;
+		sbe_similarity_num(lower_boundary, repetition_count) = outperm(mean_set_column);	
+		set_similarity = set_similarity + burst_similarity;
+		mean_set_column = mean_set_column + 1;	
+		repetition_count = repetition_count + 1;			
+	end 
+
+	set_mean_similarity(1, mean_column_ref) = 1 / set_size * set_similarity;
+	set_mean_similarity(2, mean_column_ref) = lower_boundary;
+	set_mean_similarity(3, mean_column_ref) = upper_boundary;
+	lower_boundary = lower_boundary + 1;
+	mean_set_column = lower_boundary;
+	upper_boundary = lower_boundary + set_size - 1;
+	mean_column_ref = mean_column_ref + 1;
+end
+
+
+
+
+
+
+
+
+
+
+
+
+mean_column_ref = 1;
+lower_boundary = 1;
+upper_boundary = lower_boundary + set_size - 1;
+mean_set_column = 1;
+j = 1;
+
+while upper_boundary <= length(mean_activation)
+	
+	repetition_count = 1;
+	set_mean_summation = 0;
+	set_similarity = 0;
+
+	while repetition_count <= set_size
+
+		j = 1;
+		act_elec = burst.chcnt(outperm(mean_set_column));
+		formula_elec = act_elec * (act_elec - 1);
+		set_mean_summation = 0;
+		
+		while j <= 59
+
+			if mean_activation(j, mean_set_column) ~= 0
+
+				mean_rela_diff = 0.03 - abs(mean_activation(j, mean_set_column) - set_mean(1, mean_column_ref));
+				mean_heav_step = heaviside(mean_rela_diff);
+				set_mean_summation = mean_heav_step + set_mean_summation;
+			end
+				
+			j = j + 1;
+		end
+		
+		h_result(lower_boundary, repetition_count) = set_mean_summation;
+		burst_similarity = 1 / act_elec * set_mean_summation;	
+		set_similarity = set_similarity + burst_similarity;
+		mean_set_column = mean_set_column + 1;	
+		repetition_count = repetition_count + 1;			
+	end 
+
+	set_mean_similarity(1, mean_column_ref) = 1 / set_size * set_similarity;
+	set_mean_similarity(2, mean_column_ref) = lower_boundary;
+	set_mean_similarity(3, mean_column_ref) = upper_boundary;
+	lower_boundary = lower_boundary + 1;
+	mean_set_column = lower_boundary;
+	upper_boundary = lower_boundary + set_size - 1;
+	mean_column_ref = mean_column_ref + 1;
+end

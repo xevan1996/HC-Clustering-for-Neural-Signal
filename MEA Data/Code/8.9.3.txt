@@ -1,0 +1,18 @@
+highest_num = 0;
+highest_trial = 1;
+
+while highest_trial <= length(new_set)
+
+	if new_set(1, highest_trial) > highest_num
+		
+		highest_num = set_similarity_1(1, highest_trial);
+		next_set1(1, 1) = new_set(1, highest_trial);
+		next_set1(2, 1) = new_set(2, highest_trial); 
+		next_set1(3, 1) = new_set(3, highest_trial); 
+		next_set1(4, 1) = new_set(4, highest_trial); 
+		next_set1(5, 1) = new_set(5, highest_trial);  
+
+	end
+	
+	highest_trial = highest_trial + 1;
+end

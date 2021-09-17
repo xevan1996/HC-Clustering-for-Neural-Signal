@@ -1,0 +1,332 @@
+file = datastrm ('KMT_data.mcd');
+data = nextdata(file,'streamname','Electrode Raw Data','startend',[0 10000]);
+
+Fs = 25000;
+Fn = Fs/2;
+T = 1/Fs;
+L = length(data.data(2,:));
+t = (0:L-1)*T;
+
+signal.tms = (0:L-1)*T;
+
+
+ADC = (2^16) / 2;
+
+x = 64;
+y = L;
+
+for x = 1:x
+	for y = 1:y
+		if data.data (x,y) ~= 0
+			data.data (x,y) = data.data (x,y) - ADC;
+		end
+	end
+end
+
+
+Wp = [300 3000] / Fn;
+Ws = [200 3200] / Fn;
+n = 5;
+Rp = 1;
+Rs = 150; 
+[z,p,k] = ellip(n,Rp,Rs,Wp, 'bandpass');
+[sos,g] = zp2sos(z,p,k);
+signal.data = filtfilt(sos, g, data.data(2,:));
+
+
+subplot(2,1,1); 
+plot(signal.tms,data.data(2,:));
+xlabel('Time (s)')
+ylabel('Voltage')
+grid on	
+subplot(2,1,2); 
+plot(signal.tms,signal.data);
+xlabel('Time (s)')
+ylabel('Voltage')
+grid on	
+
+
+subplot(2,1,1); 
+NFFT = 2^nextpow2(L);
+Y = fft(data.data (2,:),NFFT)/L;
+f = Fs/2*linspace(0,1,NFFT/2+1);
+plot(f,2*abs(Y(1:NFFT/2+1)));
+xlabel('Frequency (Hz)')
+ylabel('Magnitude')
+grid on
+subplot(2,1,2); 
+NFFT = 2^nextpow2(L);
+Y = fft(signal.data,NFFT)/L;
+f = Fs/2*linspace(0,1,NFFT/2+1);
+plot(f,2*abs(Y(1:NFFT/2+1)));
+xlabel('Frequency (Hz)')
+ylabel('Magnitude')
+grid on
+
+
+threshold_num = 1;
+
+for signal_num = 1:250:L
+	A = prctile(signal.data(1, signal_num:signal_num + 249),[2 30]);
+	Ar = A(1) / A(2);
+	A(2) = abs(A(2));
+
+	if Ar < 5 & A(2) ~= 0 || threshold_num == 1
+		ex.threshold(1, threshold_num) = A(1) * 3;
+	else
+		ex.threshold(1, threshold_num) = ex.threshold(1, (threshold_num - 1));
+	end
+
+	threshold_num = threshold_num + 1;
+end
+
+
+threshold_num = 1;
+signal_num = 1;
+ins = 1;
+while signal_num <= L
+	count = 250;
+	while count ~= 0
+		if abs(signal.data(1, signal_num)) >= abs(ex.threshold(1, threshold_num))
+			ex.signal(1, ins) = (signal.data(1, signal_num));
+			ex.tms(1, ins) = (signal.tms(1, signal_num));
+			ins = ins + 1;
+		end
+
+
+	signal_num = signal_num + 1;
+	count = count - 1;
+	end
+
+threshold_num = threshold_num + 1;
+end
+
+
+plot(signal.tms,signal.data);
+hold on
+plot(ex.tms,ex.signal, 'o');
+xlabel('Time (s)')
+ylabel('Voltage')
+grid on	
+
+
+sigL = length(ex.signal);
+dsignal_num = 1;
+dins = 1;
+
+while dsignal_num <= sigL
+
+	if dsignal_num >= 2 && dsignal_num <= sigL
+		check_before = ex.tms(1, dsignal_num) - ex.tms(1, (dsignal_num - 1));
+	else
+		check_before = 0;
+	end
+
+
+	if dsignal_num >= 1 && dsignal_num <= (sigL - 1)
+		check_after = ex.tms(1, (dsignal_num + 1)) - ex.tms(1, dsignal_num);
+	else
+		check_after = 0;
+	end
+
+
+	if dsignal_num == 1
+		if abs(ex.signal(1, dsignal_num)) >= abs(ex.signal(1, (dsignal_num + 1))) 
+			if ex.signal(1, dsignal_num) > 0
+				if ex.signal(1, dsignal_num) > (0.5 * (ex.signal(1, dsignal_num + 1)))
+					ex.trsig(1,dins) = ex.signal(1,dsignal_num);
+					ex.trtms(1,dins) = ex.tms(1,dsignal_num);
+					dins = dins + 1;
+				end
+			end
+
+			if ex.signal(1, dsignal_num) < 0
+				if ex.signal(1, dsignal_num) < (0.5 * (ex.signal(1, dsignal_num + 1)))
+					ex.trsig(1,dins) = ex.signal(1,dsignal_num);
+					ex.trtms(1,dins) = ex.tms(1,dsignal_num);
+					dins = dins + 1;
+				end
+			end
+		end
+	end
+
+
+	if dsignal_num == sigL 
+		if abs(ex.signal(1, dsignal_num)) >= abs(ex.signal(1, (dsignal_num - 1))) 
+			if ex.signal(1, dsignal_num) > 0
+				if ex.signal(1, dsignal_num) > (0.5 * (ex.signal(1, dsignal_num - 1)))
+					ex.trsig(1,dins) = ex.signal(1,dsignal_num);
+					ex.trtms(1,dins) = ex.tms(1,dsignal_num);
+					dins = dins + 1;
+				end
+			end
+
+			if ex.signal(1, dsignal_num) < 0
+				if ex.signal(1, dsignal_num) < (0.5 * (ex.signal(1, dsignal_num - 1)))
+					ex.trsig(1,dins) = ex.signal(1,dsignal_num);
+					ex.trtms(1,dins) = ex.tms(1,dsignal_num);
+					dins = dins + 1;
+				end
+			end
+		end
+	end	
+
+
+	if check_before > 0.001 && check_after <= 0.001 && dsignal_num ~= sigL
+		if abs(ex.signal(1, dsignal_num)) >= abs(ex.signal(1, (dsignal_num + 1))) 
+			if ex.signal(1, dsignal_num) > 0
+				if ex.signal(1, dsignal_num) > (0.5 * (ex.signal(1, dsignal_num + 1)))
+					ex.trsig(1,dins) = ex.signal(1,dsignal_num);
+					ex.trtms(1,dins) = ex.tms(1,dsignal_num);
+					dins = dins + 1;
+				end
+			end
+
+			if ex.signal(1, dsignal_num) < 0
+				if ex.signal(1, dsignal_num) < (0.5 * (ex.signal(1, dsignal_num + 1)))
+					ex.trsig(1,dins) = ex.signal(1,dsignal_num);
+					ex.trtms(1,dins) = ex.tms(1,dsignal_num);
+					dins = dins + 1;
+				end
+			end
+		end
+	end
+
+
+	if check_after > 0.001 && check_before <= 0.001 && dsignal_num ~= 1
+		if abs(ex.signal(1, dsignal_num)) >= abs(ex.signal(1, (dsignal_num - 1))) 
+			if ex.signal(1, dsignal_num) > 0
+				if ex.signal(1, dsignal_num) > (0.5 * (ex.signal(1, dsignal_num - 1)))
+					ex.trsig(1,dins) = ex.signal(1,dsignal_num);
+					ex.trtms(1,dins) = ex.tms(1,dsignal_num);
+					dins = dins + 1;
+				end
+			end
+
+			if ex.signal(1, dsignal_num) < 0
+				if ex.signal(1, dsignal_num) < (0.5 * (ex.signal(1, dsignal_num - 1)))
+					ex.trsig(1,dins) = ex.signal(1,dsignal_num);
+					ex.trtms(1,dins) = ex.tms(1,dsignal_num);
+					dins = dins + 1;
+				end
+			end
+		end
+	end	
+
+		
+	if dsignal_num ~= 1 && dsignal_num ~= sigL && (check_before <= 0.001 && check_after <= 0.001)
+		if abs(ex.signal(1, dsignal_num)) >= abs(ex.signal(1, (dsignal_num - 1)))
+			if abs(ex.signal(1, dsignal_num)) >= abs(ex.signal(1, (dsignal_num + 1)))
+				if ex.signal(1, dsignal_num) > 0
+					if ex.signal(1, dsignal_num) > (0.5 * (ex.signal(1, (dsignal_num - 1)))) && ex.signal(1, dsignal_num) > (0.5 * (ex.signal(1, dsignal_num + 1)))
+						ex.trsig(1,dins) = ex.signal(1,dsignal_num);
+						ex.trtms(1,dins) = ex.tms(1,dsignal_num);
+						dins = dins + 1;
+					end
+				end
+
+				if ex.signal(1, dsignal_num) < 0
+					if ex.signal(1, dsignal_num) < (0.5 * (ex.signal(1, (dsignal_num - 1)))) && ex.signal(1, dsignal_num) < (0.5 * (ex.signal(1, dsignal_num + 1)))
+						ex.trsig(1,dins) = ex.signal(1,dsignal_num);
+						ex.trtms(1,dins) = ex.tms(1,dsignal_num);
+						dins = dins + 1;
+					end	
+				end						
+			end
+		end
+	end
+
+
+dsignal_num = dsignal_num + 1;
+end
+
+
+plot(signal.tms,signal.data);
+hold on
+plot(ex.trtms,ex.trsig, 'o');
+xlabel('Time (us)')
+ylabel('Voltage')
+grid on	
+
+
+
+ftrsigL = length(ex.trsig);
+dsignal_num = 1;
+dins = 1;
+
+while dsignal_num <= ftrsigL
+
+	if dsignal_num >= 2 && dsignal_num <= ftrsigL
+		check_before = ex.trtms(1, dsignal_num) - ex.trtms(1, (dsignal_num - 1));
+	else
+		check_before = 0;
+	end
+
+
+	if dsignal_num >= 1 && dsignal_num <= (ftrsigL - 1)
+		check_after = ex.trtms(1, (dsignal_num + 1)) - ex.trtms(1, dsignal_num);
+	else
+		check_after = 0;
+	end
+
+
+	if dsignal_num == 1
+		if abs(ex.trsig(1, dsignal_num)) > abs(ex.trsig(1, (dsignal_num + 1)))
+			ex.ftrsig(1,dins) = ex.trsig(1,dsignal_num);
+			ex.ftrtms(1,dins) = ex.trtms(1,dsignal_num);
+			dins = dins + 1;
+		end
+	end
+
+	if dsignal_num == ftrsigL 
+		if abs(ex.trsig(1, dsignal_num)) > abs(ex.trsig(1, (dsignal_num - 1)))
+			ex.ftrsig(1,dins) = ex.trsig(1,dsignal_num);
+			ex.ftrtms(1,dins) = ex.trtms(1,dsignal_num);
+			dins = dins + 1;
+		end
+	end
+	
+	if check_before > 0.001 && check_after <= 0.001 
+		if abs(ex.trsig(1, dsignal_num)) > abs(ex.trsig(1, (dsignal_num + 1)))
+			ex.ftrsig(1,dins) = ex.trsig(1,dsignal_num);
+			ex.ftrtms(1,dins) = ex.trtms(1,dsignal_num);
+			dins = dins + 1;
+		end
+	end
+
+	if check_before <= 0.001 && check_after > 0.001 && dsignal_num ~= 1 && dsignal_num ~= ftrsigL
+		if abs(ex.trsig(1, dsignal_num)) > abs(ex.trsig(1, (dsignal_num - 1)))
+			ex.ftrsig(1,dins) = ex.trsig(1,dsignal_num);
+			ex.ftrtms(1,dins) = ex.trtms(1,dsignal_num);
+			dins = dins + 1;
+		end
+	end
+
+	if check_before <= 0.001 && check_after <= 0.001 && dsignal_num ~= 1 && dsignal_num ~= ftrsigL
+		if (abs(ex.trsig(1, dsignal_num)) >  abs(ex.trsig(1, (dsignal_num - 1)))) && (abs(ex.trsig(1, dsignal_num)) >  abs(ex.trsig(1, (dsignal_num + 1))))
+				ex.ftrsig(1,dins) = ex.trsig(1,dsignal_num);
+				ex.ftrtms(1,dins) = ex.trtms(1,dsignal_num);
+				dins = dins + 1;
+		end
+	end	
+
+	if ex.trsig(1, dsignal_num) < 0
+		ex.ftrsig(1,dins) = ex.trsig(1,dsignal_num);
+		ex.ftrtms(1,dins) = ex.trtms(1,dsignal_num);
+		dins = dins + 1;
+	end
+
+dsignal_num = dsignal_num + 1;
+end
+
+
+plot(signal.tms,signal.data);
+hold on
+plot(ex.ftrtms,ex.ftrsig, 'o');
+xlabel('Time (s)')
+ylabel('Voltage')
+grid on	
+
+
+complete.temp1.signal = ex.ftrsig;
+complete.temp1.tms = ex.ftrtms;

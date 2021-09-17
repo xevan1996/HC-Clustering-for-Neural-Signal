@@ -1,0 +1,125 @@
+highest_num = 0;
+highest_trial = 1;
+
+while highest_trial <= length(set_mean_similarity)
+
+	if set_mean_similarity(1, highest_trial) > highest_num
+		
+		highest_num = set_mean_similarity(1, highest_trial);
+		next_set1(1, 1) = set_mean_similarity(1, highest_trial);
+		next_set1(2, 1) = set_mean_similarity(2, highest_trial); 
+		next_set1(3, 1) = set_mean_similarity(3, highest_trial); 
+		next_set1(4, 1) = set_mean_similarity(4, highest_trial); 
+		next_set1(5, 1) = set_mean_similarity(5, highest_trial);  
+
+	end
+	
+	highest_trial = highest_trial + 1;
+end
+
+
+
+small_set = next_set1(2, 1) - set_size + 1;
+large_set = next_set1(3, 1) + set_size + 1;
+
+trial_sim_1 = mean_sim_index;
+tiral_elec_1 = mean_elec_num;
+trial_set_1 = set_mean_similarity;
+
+repeat_max = large_set - small_set - 1;
+repeat_count = 1;
+
+while repeat_count <= repeat_max
+
+	trial_sim_1(:, small_set) = [];
+	tiral_elec_1(:, small_set) = [];
+	trial_set_1(:, small_set) = [];
+	repeat_count = repeat_count + 1;
+end
+
+
+
+
+verify_same = 0;
+verify_count = 0;
+verify_flag = 2;
+current_trial_sim = trial_sim_1;
+current_trial_elec = tiral_elec_1;
+current_trial_set = trial_set_1;
+ref_column = 1;
+
+
+
+while ref_column <= length(current_trial_sim)
+
+	ref_row = 1;
+
+	while ref_row <= set_size
+
+		wreg_elec = current_trial_elec(ref_row, ref_column);
+		wreg_sim = current_trial_sim(ref_row, ref_column);
+		wreg_low_bound = current_trial_set(2, ref_column);
+		wreg_high_bound = current_trial_set(3, ref_column);
+
+		
+		if wreg_low_bound >= (set_size + 1)
+
+			wreg_low_column = wreg_low_bound - set_size + 1;
+		end
+
+		if wreg_low_bound < (set_size + 1)
+
+			wreg_low_column = wreg_low_bound;
+		end		
+
+		if wreg_high_bound <= (length(current_trial_set) - (2 * (set_size - 1)))
+			
+			wreg_high_column = wreg_high_bound + set_size - 1;
+		end
+
+		if wreg_high_bound > (length(current_trial_set) - (2 * (set_size - 1)))
+			
+			wreg_high_column = length(current_trial_set);
+		end		
+
+		while wreg_low_column <= wreg_high_column
+
+			wreg_row = 1;
+			
+			while wreg_row <= set_size
+
+				if wreg_elec == current_trial_elec(wreg_row, wreg_low_column)
+			
+					verify_same = verify_same + 1;
+				end
+
+				if wreg_sim > current_trial_sim(wreg_row, wreg_low_column)
+			
+					verify_count = verify_count + 1;
+				end
+
+				wreg_row = wreg_row + 1;
+			end
+
+			wreg_low_column = wreg_low_column + 1;
+		end
+
+		if verify_same == (verify_count - 1)
+
+			next_set1(1, verify_flag) = current_trial_set(1, ref_column);
+			next_set1(2, verify_flag) = current_trial_set(2, ref_column); 
+			next_set1(3, verify_flag) = current_trial_set(3, ref_column); 
+			next_set1(4, verify_flag) = current_trial_set(4, ref_column); 
+			next_set1(5, verify_flag) = current_trial_set(5, ref_column); 
+			verify_flag = verify_flag + 1;
+		end 				
+
+		verify_same = 0;
+		verify_count = 0;
+		ref_row = ref_row + 1;
+	end
+
+	ref_column = ref_column + 1;
+end
+					
+

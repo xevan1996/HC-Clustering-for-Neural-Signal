@@ -1,0 +1,19 @@
+threshold_num = 1;
+signal_num = 1;
+
+while signal_num < L
+
+	mean_bin = mean(signal.data(signal_num:signal_num + 249));
+
+	while signal_num <= (threshold_num * 250)
+		mock_data(signal_num) = abs(signal.data(1, signal_num) - mean_bin);
+		signal_num = signal_num + 1;
+	end
+
+	median_bin = median(mock_data);
+	ex.threshold(1, threshold_num) = median_bin / 0.6475 * 5;
+
+	threshold_num = threshold_num + 1;
+end
+
+

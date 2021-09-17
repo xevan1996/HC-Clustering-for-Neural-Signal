@@ -1,0 +1,97 @@
+mean_column = 1;
+
+while mean_column <= length(burst.t0)
+
+	sorted_activation_matrix(1:3481, mean_column) = activation_matrix(:, outperm(mean_column));
+	mean_column = mean_column + 1;
+end
+
+
+
+
+
+
+
+
+set_size = round(sqrt(length(burst.t0)));
+mean_column = 1;
+sum_row = 1;
+
+while mean_column <= length(burst.t0)
+
+	mean_row = 1;
+
+	while mean_row <= 3481
+
+		set_count = 1;	
+		summation_activation_matrix = 0;
+	
+		while set_count <= 59
+
+			if sorted_activation_matrix(mean_row, mean_column) ~= 0
+
+				summation_activation_matrix = summation_activation_matrix + abs(sorted_activation_matrix(mean_row, mean_column));
+			end
+
+			set_count = set_count + 1;
+			mean_row = mean_row + 1;
+		end
+
+		mean_activation(sum_row, mean_column) = summation_activation_matrix / burst.chcnt(outperm(mean_column), 1);
+		sum_row = sum_row + 1;
+	end
+
+	mean_column = mean_column + 1;
+	sum_row = 1;
+end
+
+
+
+
+
+
+set_count_column = 1;
+
+while set_count_column <= length(burst.t0)
+
+	set_count_row = 1;
+	summation = 0;
+
+	while set_count_row <= 59
+
+		summation = summation + abs(mean_activation(set_count_row, set_count_column));
+		set_count_row = set_count_row + 1;
+	end
+
+	set_epair(1, set_count_column) = summation / burst.chcnt(outperm(set_count_column), 1);
+	set_count_column = set_count_column + 1;
+end
+
+
+
+
+
+lower_boundary = 1;
+upper_boundary = lower_boundary + set_size - 1;
+mean_column = 1;
+
+while upper_boundary <= length(mean_activation)
+
+	summation_mean = 0;
+	repetition_count = 1;
+
+	while repetition_count <= set_size
+
+		summation_mean = summation_mean + set_epair(1, mean_column);
+		mean_column = mean_column + 1;
+		repetition_count = repetition_count + 1;
+	end
+	
+	set_mean(1, lower_boundary) = summation_mean / set_size;
+	lower_boundary = lower_boundary + 1;
+	mean_column = lower_boundary;
+	upper_boundary = lower_boundary + set_size - 1;
+end
+
+
+

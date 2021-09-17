@@ -1,0 +1,66 @@
+highest_num = 0;
+highest_trial = 2;
+
+while highest_trial <= length(final_set5)
+
+	if final_set5(1, highest_trial) > highest_num
+		
+		highest_num = final_set5(1, highest_trial);
+		next_set(1, 6) = final_set5(1, highest_trial);
+		next_set(2, 6) = final_set5(2, highest_trial); 
+		next_set(3, 6) = final_set5(3, highest_trial); 
+		next_set(4, 6) = final_set5(4, highest_trial); 
+		next_set(5, 6) = final_set5(5, highest_trial);  
+
+	end
+	
+	highest_trial = highest_trial + 1;
+end
+
+
+
+final_column = 1;
+
+final_set6(1, final_column) = next_set(1, 6);
+final_set6(2, final_column) = next_set(2, 6);
+final_set6(3, final_column) = next_set(3, 6);
+final_set6(4, final_column) = next_set(4, 6);
+final_set6(5, final_column) = next_set(5, 6);
+
+low_bound = final_set6(2, 1);
+up_bound = final_set6(3, 1);
+
+final_column = final_column + 1;
+
+
+final_column = 2;
+final_set_count = 2;
+
+while final_column <= length(final_set5)
+	
+	cond_flag = 0;
+
+	if final_set5(2, final_column) < low_bound || final_set5(2, final_column) > up_bound
+
+		cond_flag = cond_flag + 1;
+	end
+
+	
+	if final_set5(5, final_column) < final_set6(4, 1)
+
+		cond_flag = cond_flag + 1;
+	end
+
+
+	if cond_flag == 2
+	
+		final_set6(1, final_set_count) = final_set5(1, final_column);
+		final_set6(2, final_set_count) = final_set5(2, final_column);
+		final_set6(3, final_set_count) = final_set5(3, final_column);
+		final_set6(4, final_set_count) = final_set5(4, final_column);
+		final_set6(5, final_set_count) = final_set5(5, final_column);
+		final_set_count = final_set_count + 1;
+	end
+	
+	final_column = final_column + 1;
+end

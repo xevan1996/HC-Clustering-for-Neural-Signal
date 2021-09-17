@@ -1,0 +1,18 @@
+highest_num = 0;
+highest_trial = 2;
+
+while highest_trial <= length(next_set1)
+
+	if next_set1(1, highest_trial) > highest_num
+		
+		highest_num = next_set1(1, highest_trial);
+		next_set2(1, 1) = next_set1(1, highest_trial);
+		next_set2(2, 1) = next_set1(2, highest_trial); 
+		next_set2(3, 1) = next_set1(3, highest_trial); 
+		next_set2(4, 1) = next_set1(4, highest_trial); 
+		next_set2(5, 1) = next_set1(5, highest_trial);  
+
+	end
+	
+	highest_trial = highest_trial + 1;
+end

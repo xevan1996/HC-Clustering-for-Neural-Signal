@@ -1,0 +1,112 @@
+
+x = 1;
+template_count = 1;
+
+while x <= 8
+
+	y = 1;
+
+	while y <= 8
+
+		electrode_template(1,template_count) = y;
+		electrode_template(2,template_count) = x;
+		y = y + 1;
+		template_count = template_count + 1;
+	end
+
+	x = x + 1;
+end
+
+electrode_template(:, 1) = [];
+electrode_template(:, 7) = [];
+electrode_template(:, 55) = [];
+electrode_template(:, 61) = [];
+
+
+
+
+extracted_seq = order;
+
+
+sim_elec_num = 1;
+
+while sim_elec_num <= length(extracted_seq)
+
+	wreg = extracted_seq(sim_elec_num);
+	prop_column = 1;
+	prop_repeat_count = 1;
+	
+	while prop_column <= 8
+		
+		prop_row = 8;
+
+		while prop_row >= 1
+
+			if extracted_seq(sim_elec_num) == prop_repeat_count
+				
+				prop_order(1, sim_elec_num) = prop_row;
+				prop_order(2, sim_elec_num) = prop_column;	
+				sim_elec_num = sim_elec_num + 1;
+			end
+		
+			prop_row = prop_row - 1;
+			prop_repeat_count = prop_repeat_count + 1;
+		end
+
+		prop_column = prop_column + 1;
+	end
+end
+
+
+
+
+
+
+
+
+
+
+plot(electrode_template(1, :), electrode_template(2, :), 'o');
+axis([0,9,0,9]);
+colormap(jet)
+colorbar
+hold on
+
+order_repeat = 2;
+color_change = length(extracted_seq) / 6;
+color_change = round(color_change);
+
+while order_repeat <= length(extracted_seq)
+
+	if order_repeat <= color_change
+		line([prop_order(2, (order_repeat - 1)),prop_order(2, order_repeat)] , [prop_order(1, (order_repeat - 1)),prop_order(1, order_repeat)], 'Color', 'b');
+		hold on
+	end
+
+	if order_repeat > color_change && order_repeat <= (2 * color_change)
+		line([prop_order(2, (order_repeat - 1)),prop_order(2, order_repeat)] , [prop_order(1, (order_repeat - 1)),prop_order(1, order_repeat)], 'Color', 'c');
+		hold on
+	end
+
+	if order_repeat > (2 * color_change) && order_repeat <= (3 * color_change)
+		line([prop_order(2, (order_repeat - 1)),prop_order(2, order_repeat)] , [prop_order(1, (order_repeat - 1)),prop_order(1, order_repeat)], 'Color', 'g');
+		hold on
+	end
+
+	if order_repeat > (3 * color_change) && order_repeat <= (4 * color_change)
+		line([prop_order(2, (order_repeat - 1)),prop_order(2, order_repeat)] , [prop_order(1, (order_repeat - 1)),prop_order(1, order_repeat)], 'Color', 'y');
+		hold on
+	end
+
+	if order_repeat > (4 * color_change) && order_repeat <= (5 * color_change)
+		line([prop_order(2, (order_repeat - 1)),prop_order(2, order_repeat)] , [prop_order(1, (order_repeat - 1)),prop_order(1, order_repeat)], 'Color', [1 0.5 0]);
+		hold on
+	end
+
+	if order_repeat > (5 * color_change) && order_repeat <= (6 * color_change)
+		line([prop_order(2, (order_repeat - 1)),prop_order(2, order_repeat)] , [prop_order(1, (order_repeat - 1)),prop_order(1, order_repeat)], 'Color', 'r');
+		hold on
+	end
+
+	order_repeat = order_repeat + 1;
+end	

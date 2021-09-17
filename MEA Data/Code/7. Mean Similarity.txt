@@ -1,0 +1,119 @@
+lower_boundary = 1;
+upper_boundary = lower_boundary + set_size - 1;
+sim_burst_column = 1;
+sam_column = 1;
+
+while upper_boundary <= length(burst.t0)
+
+	repetition_count = 1;
+
+	while repetition_count <= set_size
+	
+		sam_row = 1;
+		summation = 0;
+
+		act_elec = burst.chcnt(outperm(sam_column));
+		formula_elec = act_elec * (act_elec - 1);
+
+		while sam_row <= length(sorted_activation_matrix)
+
+			if sorted_activation_matrix(sam_row, sam_column) ~= 0 && burst_mean_set(sam_row, sim_burst_column) ~= 0 
+
+				rela_diff = 0.03 - abs(sorted_activation_matrix(sam_row, sam_column) - burst_mean_set(sam_row, sim_burst_column));
+				heav_step = heaviside(rela_diff);
+				summation = heav_step + summation;
+			end
+
+			sam_row = sam_row + 1;
+		end
+
+		mean_sim_index(repetition_count, sim_burst_column) = 1 / formula_elec * summation;
+		sam_column = sam_column + 1;
+		repetition_count = repetition_count + 1;
+	end
+
+	lower_boundary = lower_boundary + 1;
+	sam_column = lower_boundary;
+	upper_boundary = lower_boundary + set_size - 1;
+	sim_burst_column = sim_burst_column + 1;
+end
+
+
+
+
+
+
+mean_sum = 1;
+
+while mean_sum <= length(mean_sim_index)
+
+	sum_mean_sim = 1;
+	sum = 0;
+
+	while sum_mean_sim <= set_size
+		
+		sum = sum + mean_sim_index(sum_mean_sim, mean_sum);
+		sum_mean_sim = sum_mean_sim + 1;
+	end
+
+
+	set_mean_similarity(1, mean_sum) = sum / set_size;
+	set_mean_similarity(2, mean_sum) = mean_sum;
+	set_mean_similarity(3, mean_sum) = mean_sum + set_size - 1;
+	mean_sum = mean_sum + 1;
+end
+
+
+
+
+
+compare_overall_count = 1;
+
+while compare_overall_count <= length(mean_sim_index)
+
+	compare_set_count = 1;
+	highest_num = 0;
+	lowest_num = 1;
+
+	while compare_set_count <= set_size
+		
+		if mean_sim_index(compare_set_count, compare_overall_count) > highest_num
+
+			highest_num = mean_sim_index(compare_set_count, compare_overall_count);
+		end
+
+		if mean_sim_index(compare_set_count, compare_overall_count) < lowest_num
+
+			lowest_num = mean_sim_index(compare_set_count, compare_overall_count);
+		end
+
+		compare_set_count = compare_set_count + 1;
+	end
+
+	set_mean_similarity(4, compare_overall_count) = lowest_num;
+	set_mean_similarity(5, compare_overall_count) = highest_num;
+	compare_overall_count = compare_overall_count + 1;
+end
+
+
+
+set_size = round(sqrt(length(burst.t0)));
+
+
+sep_column = 1;
+sep_low = 1;
+
+while sep_column <= length(mean_sim_index)
+
+	sep_row = 1;
+
+	while sep_row <= set_size
+
+		mean_elec_num(sep_row, sep_column) = sep_low;
+		sep_low = sep_low + 1;
+		sep_row = sep_row + 1;
+	end
+
+	sep_column = sep_column + 1;
+	sep_low = sep_column;
+end

@@ -1,0 +1,14 @@
+overall_count = 1;
+channel_count = 1;
+
+while overall_count <= length(burst.channel)
+	channel_matrix (burst.channel(channel_count), burst.index(channel_count)) = 1;
+	channel_count = channel_count + 1;
+	overall_count = overall_count + 1;
+end
+
+last_row = 1;
+while last_row <= length(burst.t0)
+	channel_matrix (64, last_row) = 0;
+	last_row = last_row + 1;
+end

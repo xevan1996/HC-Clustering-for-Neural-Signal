@@ -1,0 +1,47 @@
+min_electrode = 429;
+max_electrode = 457;
+current_electrode = min_electrode;
+
+
+deletion_column = 1;
+approved_count = 1;
+
+while deletion_column <= length(mean_elec_num)
+
+	electrode_flag = 0;
+	current_electrode = min_electrode;
+
+	while current_electrode <= max_electrode
+
+		electrode_count =  0;
+		deletion_row = 1;
+		
+		while deletion_row <= set_size
+
+			if mean_elec_num(deletion_row, deletion_column) ~= current_electrode
+
+				electrode_count = electrode_count + 1;
+			end
+
+			deletion_row = deletion_row + 1;
+		end
+
+		if electrode_count == set_size
+		
+			electrode_flag = electrode_flag + 1;
+		end
+
+		current_electrode = current_electrode + 1;
+	end
+
+	if electrode_flag == set_size
+	
+		new_elec1(:, approved_count) = mean_elec_num(:, deletion_column);
+		new_sim1(:, approved_count) = mean_sim_index(:, deletion_column);
+		new_set(:, approved_count) = set_mean_similarity(:, deletion_column);
+		new_sepa_simi_index(:,approved_count) = sepa_simi_index(:, deletion_column);
+		approved_count = approved_count + 1;
+	end
+
+	deletion_column = deletion_column + 1;
+end

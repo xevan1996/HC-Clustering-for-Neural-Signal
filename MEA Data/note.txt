@@ -1,0 +1,44 @@
+Note: Example was based on data set HDHGC3
+
+
+spks.time = spike times in seconds
+spks.channel = electrode channel of the corresponding spikes 
+
+
+
+burstlet.t0s=the time of which a burstlet was detected 
+burstlet.start = the spks # that denotes the start of the burstlet
+burstlet.end = the spks # that denotes the end of the burstlet
+
+example: for the first burstlet
+burstlet.start(1) =1   
+burstlet.end(1)=7 
+the start time of the burstlet = spks.time(1) -> 0.4621s  
+the end time of the burstlet = spks.time(7) -> 0.6149s 
+
+burstlet.cnts= no. of spike contained in each burstlet
+for the above example, burstlet.cnts(1)=7
+
+burstlet.channel= the electrode channel from which the particular burstlet is detected
+for the above example, burstlet.channel(1)=2  -> the first burstlet was detected from electrode 2
+
+
+
+burst.t0=the time of the burst
+burst.mn=the start time of the burst
+burst.mx=the end time of the burst
+burst.spikecount=total no. of spikes contained in the burst
+burst.chcnt=total no. of electrode channels involved in the burst
+
+burst.index= the burst # of the burstlet 
+example: burst.index(1:50)==1 -> the first 50 burstlets belong to burst #1
+
+burst.channel= the electrode channel of which the burstlet was detected
+
+burst.burstlet = the no. in "burstlet".mat"
+example: burst.burstlet(1)=1 is the 1st. element in "burstlet.mat"
+         burst.burstlet(2)=1003 is the 1003rd. element in "burstlet.mat"
+
+
+No Electrode: 1, 8, 57, 64
+Ground Electrode: 5

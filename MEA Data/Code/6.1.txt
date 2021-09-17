@@ -1,0 +1,60 @@
+set_size = round(sqrt(length(burst.t0)));
+mean_column = 1;
+
+while mean_column <= length(burst.t0)
+	
+	summation_activation_matrix = 0;
+	mean_row = 1;
+
+	while mean_row <= 3480
+
+		if activation_matrix(mean_row, mean_column) ~= 0
+
+			summation_activation_matrix = summation_activation_matrix + abs(activation_matrix(mean_row, mean_column));
+		end
+
+		mean_row = mean_row + 1;
+	end
+
+	mean_activation(1, mean_column) = summation_activation_matrix / (burst.chcnt(mean_column, 1) * burst.chcnt(mean_column, 1));
+	mean_column = mean_column + 1;
+end
+
+
+
+
+
+mean_column = 1;
+
+while mean_column <= length(mean_activation)
+
+	sorted_mean_activation(1, mean_column) = mean_activation(1, outperm(mean_column));
+	mean_column = mean_column + 1;
+end
+
+
+
+
+
+lower_boundary = 1;
+upper_boundary = lower_boundary + set_size - 1;
+mean_column = 1;
+
+while upper_boundary <= length(mean_activation)
+
+	summation_mean = 0;
+	repetition_count = 1;
+
+	while repetition_count <= set_size
+
+		summation_mean = summation_mean + sorted_mean_activation(1, mean_column);
+		mean_column = mean_column + 1;
+		repetition_count = repetition_count + 1;
+	end
+	
+	set_mean(1, lower_boundary) = summation_mean / set_size;
+	lower_boundary = lower_boundary + 1;
+	mean_column = lower_boundary;
+	upper_boundary = lower_boundary + set_size - 1;
+end
+

@@ -1,0 +1,18 @@
+threshold_num = 1;
+signal_num = 1;
+
+while signal_num < L
+	
+	summation = 0;
+	mean_bin = mean(signal.data(signal_num:signal_num + 249));
+
+	while signal_num <= (threshold_num * 250)
+		summation = summation + ((signal.data(signal_num) - mean_bin)^2);
+		signal_num = signal_num + 1;
+	end
+
+	rms_value = sqrt(summation / 250);
+	ex.threshold(1, threshold_num) = rms_value * 6;
+
+	threshold_num = threshold_num + 1;
+end

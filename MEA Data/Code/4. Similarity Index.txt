@@ -1,0 +1,40 @@
+column_ref = 1;
+
+while column_ref <= length(burst.t0)
+
+	column_current = 1;
+
+	act_elec = burst.chcnt(column_ref);
+	formula_elec = act_elec * (act_elec - 1);
+	
+	while column_current <= length(burst.t0)
+			
+		row_compute = 1;
+		summation = 0;
+
+		while row_compute <= 3480
+
+			if activation_matrix(row_compute, column_ref) ~= 0 && activation_matrix(row_compute, column_current) ~= 0 
+				rela_diff = 0.03 - abs(activation_matrix(row_compute, column_ref) - activation_matrix(row_compute, column_current));
+				heav_step = heaviside(rela_diff);
+				summation = heav_step + summation;
+			end
+
+			row_compute = row_compute + 1;
+		end
+
+		column_current = column_current + 1;
+		sim_index(column_ref, column_current) = 1 / formula_elec * summation;
+
+	end
+		
+	column_ref = column_ref + 1;
+
+end
+
+sim_index(:,1) = [];
+
+imagesc(sim_index)
+caxis([0 1])
+colormap(jet)
+colorbar

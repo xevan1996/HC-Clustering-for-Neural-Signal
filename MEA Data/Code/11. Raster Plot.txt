@@ -1,0 +1,69 @@
+raster_column = 1;
+
+while raster_column <= length(burst.t0)
+	
+	raster_row = 1;
+
+	while raster_row <= 64
+
+		if channel_matrix(raster_row, raster_column) == 1
+
+			raster_matrix(raster_row, raster_column) = raster_row;
+		end
+
+		raster_row = raster_row + 1;
+	end
+	
+	raster_column = raster_column + 1;
+end
+	
+			
+	
+
+
+j = 1;
+
+while j <= 64
+
+	i = 1;
+
+	while i <= set_size
+
+		if channel_matrix(j,outperm(j)) == 1	
+
+			scatter(activation_time(j,i), raster_matrix(j,i), 50, 'k', '.')
+			hold on			
+		end
+
+		i = i + 1;
+	end
+
+	j = j + 1;
+	
+end
+
+
+
+raster_column = 113;
+
+while raster_column <= (113 + 34 - 1)
+
+	raster_row = 1;
+
+		while raster_row <= 64
+
+			if channel_matrix(raster_row, outperm(raster_column)) == 1	
+
+				scatter(activation_time(raster_row, outperm(raster_column)), raster_matrix(raster_row, outperm(raster_column)), 50, 'k', '.')
+				hold on			
+			end
+
+			raster_row = raster_row + 1;
+
+		end
+
+	raster_column = raster_column + 1;
+end	
+
+
+	

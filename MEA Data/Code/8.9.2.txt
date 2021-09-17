@@ -1,0 +1,47 @@
+ref_burst_set = burst_mean_set(:, 429);
+
+sepasimi_column = 1;
+
+while sepasimi_column <= length(mean_elec_num)
+
+	sepasimi_row = 1;
+	act_elec = burst.chcnt(outperm(sepasimi_column));
+	formula_elec = act_elec * (act_elec - 1);
+	summation = 0;
+	
+	while sepasimi_row <= length(sorted_activation_matrix)
+
+		if sorted_activation_matrix(sepasimi_row, sepasimi_column) ~= 0 && burst_mean_set(sepasimi_row, sepasimi_column) ~= 0 
+
+			rela_diff = 0.01 - abs(burst_mean_set(sepasimi_row, sepasimi_column) - ref_burst_set(sepasimi_row, 1));
+			heav_step = heaviside(rela_diff);
+			summation = heav_step + summation;
+		end
+
+		sepasimi_row = sepasimi_row + 1;
+	end
+
+	sepa_simi_index(1, sepasimi_column) = 1 / formula_elec * summation;
+	sepasimi_column = sepasimi_column + 1;
+end
+
+
+
+
+repeat_count = 1;
+trigger_count = 1;
+
+while repeat_count <= length(new_set) 
+
+	if new_sepa_simi_index(1, repeat_count) < 0.9714
+	
+		set_similarity_1(1, trigger_count) = new_set(1, repeat_count);
+		set_similarity_1(2, trigger_count) = new_set(2, repeat_count);
+		set_similarity_1(3, trigger_count) = new_set(3, repeat_count);
+		set_similarity_1(4, trigger_count) = new_set(4, repeat_count);
+		set_similarity_1(5, trigger_count) = new_set(5, repeat_count);
+		trigger_count = trigger_count + 1;
+	end
+	
+	repeat_count = repeat_count + 1;
+end
